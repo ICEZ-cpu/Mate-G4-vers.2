@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kuis Matematika Kelas 4 - SA1 Summary Exercise (Bab 4–6)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f1f5f9;
+      color: #0f172a;
+    }
+    .frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 3px;
+      line-height: 1.05;
+      font-weight: 600;
+    }
+    .frac > span:first-child {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 3px 1px;
+    }
+    .frac > span:last-child {
+      padding: 1px 3px 0;
+    }
+    .mixed {
+      display: inline-flex;
+      align-items: center;
+      vertical-align: middle;
+      gap: 2px;
+      font-weight: 600;
+    }
+    .option-card {
+      transition: all 0.15s ease-in-out;
+    }
+    .option-card:hover:not(.disabled-opt) {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen pb-28">
+  <!-- Sticky Top Header & Progress Bar -->
+  <header class="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div>
+          <span class="inline-block text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-full">Grade 4 • Matematika</span>
+          <h1 class="text-lg sm:text-xl font-extrabold text-slate-900 mt-0.5">SA1 Summary Exercise (Review Bab 4–6)</h1>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5 text-sm">
+          <div id="timer-box" class="bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-semibold text-amber-800 flex items-center gap-1.5">
+            <span>⏱️ Sisa Waktu:</span>
+            <span id="timer-display" class="font-mono font-extrabold text-amber-900">90:00</span>
+          </div>
+          <div class="bg-slate-100 px-3 py-1.5 rounded-xl font-semibold text-slate-700">
+            Terjawab: <span id="answered-count" class="text-indigo-600 font-bold">0</span> / <span id="total-count">62</span>
+          </div>
+          <button type="button" onclick="resetQuiz()" class="px-3 py-1.5 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold transition">
+            Reset
+          </button>
+        </div>
+      </div>
+      <!-- Progress Bar -->
+      <div class="w-full bg-slate-200 h-2.5 rounded-full mt-2.5 overflow-hidden">
+        <div id="progress-bar" class="bg-indigo-600 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4 pt-6">
+    <!-- Student Identity & Mode Control Card -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-5 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+        <div>
+          <label for="student-name" class="block text-sm font-semibold text-slate-700 mb-1">Nama Siswa (Student Name)</label>
+          <input
+            type="text"
+            id="student-name"
+            placeholder="Masukkan nama lengkap kamu..."
+            class="w-full px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900"
+          />
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2 sm:justify-end">
+          <label class="inline-flex items-center gap-2 cursor-pointer bg-slate-50 border border-slate-200 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-700">
+            <input type="checkbox" id="instant-mode" class="w-4 h-4 text-indigo-600 rounded focus:ring-indigo-500" />
+            <span>Koreksi Langsung (Instant Feedback)</span>
+          </label>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500 mt-3">
+        Total <strong>62 soal pilihan ganda</strong> (Nomor 1 sampai 40 lengkap dengan semua bagian a, b, c, d). Waktu pengerjaan adalah <strong>90 menit</strong> dan akan otomatis terkumpul saat waktu habis. Pilih jawaban terbaik pada setiap soal, lalu klik <strong>Selesai &amp; Hitung Nilai</strong> di bagian bawah.
+      </p>
+    </section>
+
+    <!-- Score Summary Banner (Hidden until submitted) -->
+    <section id="score-banner" class="hidden mb-6 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-2xl shadow-lg p-6">
+      <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+        <div>
+          <p id="auto-submit-badge" class="hidden inline-block bg-amber-400 text-slate-900 text-xs font-extrabold px-2.5 py-0.5 rounded-full mb-1">WAKTU HABIS • AUTO SUBMIT</p>
+          <p class="text-indigo-100 text-sm font-medium">Hasil Evaluasi Latihan SA1</p>
+          <h2 id="result-student-name" class="text-2xl font-extrabold mt-0.5">Siswa Hebat</h2>
+          <p id="result-message" class="text-sm text-indigo-100 mt-1">Bagus sekali! Terus berlatih agar semakin mahir.</p>
+        </div>
+        <div class="flex items-center gap-4 bg-white/15 backdrop-blur px-5 py-3 rounded-2xl border border-white/20">
+          <div class="text-center">
+            <div class="text-xs uppercase tracking-wider text-indigo-100">Skor Benar</div>
+            <div class="text-2xl font-extrabold"><span id="score-correct">0</span> / 62</div>
+          </div>
+          <div class="h-10 w-px bg-white/30"></div>
+          <div class="text-center">
+            <div class="text-xs uppercase tracking-wider text-indigo-100">Nilai Akhir</div>
+            <div class="text-3xl font-extrabold"><span id="score-percent">0</span>%</div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <button type="button" onclick="resetQuiz()" class="px-5 py-2.5 bg-white text-indigo-700 font-bold rounded-xl shadow hover:bg-indigo-50 transition">
+          Coba Lagi / Reset Kuis
+        </button>
+        <button type="button" onclick="filterWrongOnly()" id="filter-btn" class="px-5 py-2.5 bg-indigo-800/60 hover:bg-indigo-800 text-white font-semibold rounded-xl border border-white/20 transition">
+          Tampilkan Soal yang Salah Saja
+        </button>
+      </div>
+    </section>
+
+    <!-- Questions Container -->
+    <div id="quiz-container" class="space-y-5"></div>
+
+    <!-- Bottom Submit Action -->
+    <div class="mt-8 bg-white rounded-2xl shadow-sm border border-slate-200 p-6 text-center">
+      <p id="unanswered-warning" class="hidden text-sm font-medium text-amber-600 mb-3"></p>
+      <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+        <button
+          type="button"
+          id="submit-btn"
+          onclick="submitQuiz(false)"
+          class="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-md transition text-base"
+        >
+          Selesai &amp; Hitung Nilai
+        </button>
+        <button
+          type="button"
+          onclick="resetQuiz()"
+          class="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl transition text-base"
+        >
+          Coba Lagi / Reset
+        </button>
+      </div>
+    </div>
+
+    <!-- Credit Footer -->
+    <footer class="mt-8 text-center text-sm font-semibold text-slate-500">
+      Maked by Sujato Andika Nanda
+    </footer>
+  </main>
+
+  <script>
+    // Helper HTML formatters for clean fractions and mixed numbers
+    function F(n, d) {
+      return `<span class="frac"><span>${n}</span><span>${d}</span></span>`;
+    }
+    function M(w, n, d) {
+      return `<span class="mixed"><span>${w}</span>${F(n, d)}</span>`;
+    }
+
+    // SVG Grid Generator for Question 1a (3x3), 1b (3x4), and 1c (4x4)
+    function makeGridSVG(rows, cols, shadedIndices) {
+      const cellSize = 36;
+      const width = cols * cellSize + 4;
+      const height = rows * cellSize + 4;
+      let rects = '';
+      for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < cols; c++) {
+          const idx = r * cols + c;
+          const isShaded = shadedIndices.includes(idx);
+          const x = 2 + c * cellSize;
+          const y = 2 + r * cellSize;
+          rects += `<rect x="${x}" y="${y}" width="${cellSize}" height="${cellSize}" fill="${isShaded ? '#6366f1' : '#ffffff'}" stroke="#334155" stroke-width="2" />`;
+        }
+      }
+      return `
+        <div class="my-3 inline-block p-2 bg-slate-50 rounded-xl border border-slate-200">
+          <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" class="block rounded">
+            ${rects}
+          </svg>
+        </div>
+      `;
+    }
+
+    // Complete 62-item Question Bank mirroring SA1 Summary Exercise (No. 1 - 40 including all sub-parts, all numbers modified)
+    const questions = [
+      // 1a, 1b, 1c
+      {
+        id: "1a",
+        section: "Bab 4: Pecahan",
+        prompt: `Tuliskan nilai pecahan paling sederhana dari bagian yang diarsir pada gambar berikut.` + makeGridSVG(3, 3, [0, 1, 4, 7]),
+        options: [F(4, 9), F(5, 9), F(4, 5), F(1, 3)],
+        answer: 0,
+        explanation: `Terdapat 4 kotak yang diarsir dari total 9 kotak (3 × 3), sehingga nilai pecahannya adalah ${F(4, 9)}.`
+      },
+      {
+        id: "1b",
+        section: "Bab 4: Pecahan",
+        prompt: `Tuliskan nilai pecahan paling sederhana dari bagian yang diarsir pada gambar berikut.` + makeGridSVG(3, 4, [0, 2, 5, 7, 8, 9, 10, 11]),
+        options: [F(3, 4), F(2, 3), F(8, 12), F(1, 2)],
+        answer: 1,
+        explanation: `Ada 8 kotak diarsir dari 12 kotak (3 × 4) = ${F(8, 12)}. Jika disederhanakan (dibagi 4), hasilnya adalah ${F(2, 3)}.`
+      },
+      {
+        id: "1c",
+        section: "Bab 4: Pecahan",
+        prompt: `Tuliskan nilai pecahan paling sederhana dari bagian yang diarsir pada gambar berikut.` + makeGridSVG(4, 4, [0, 3, 5, 6, 9, 10]),
+        options: [F(1, 2), F(6, 16), F(3, 8), F(5, 8)],
+        answer: 2,
+        explanation: `Ada 6 kotak diarsir dari 16 kotak (4 × 4) = ${F(6, 16)}. Jika pembilang dan penyebut dibagi 2, diperoleh ${F(3, 8)}.`
+      },
+
+      // 2a, 2b
+      {
+        id: "2a",
+        section: "Bab 4: Pecahan",
+        prompt: `Nyatakan pecahan tidak murni ${F(47, 7)} ke dalam bentuk pecahan campuran.`,
+        options: [M(6, 5, 7), M(7, 2, 7), M(5, 5, 7), M(6, 4, 7)],
+        answer: 0,
+        explanation: `47 ÷ 7 = 6 sisa 5 (karena 7 × 6 = 42, 47 − 42 = 5). Jadi, ${F(47, 7)} = ${M(6, 5, 7)}.`
+      },
+      {
+        id: "2b",
+        section: "Bab 4: Pecahan",
+        prompt: `Nyatakan pecahan tidak murni ${F(86, 9)} ke dalam bentuk pecahan campuran.`,
+        options: [M(8, 5, 9), M(9, 4, 9), M(10, 4, 9), M(9, 5, 9)],
+        answer: 3,
+        explanation: `86 ÷ 9 = 9 sisa 5 (karena 9 × 9 = 81, 86 − 81 = 5). Jadi, ${F(86, 9)} = ${M(9, 5, 9)}.`
+      },
+
+      // 3a, 3b
+      {
+        id: "3a",
+        section: "Bab 4: Pecahan",
+        prompt: `Nyatakan pecahan campuran ${M(7, 3, 5)} ke dalam bentuk pecahan tidak murni.`,
+        options: [F(35, 5), F(38, 5), F(32, 5), F(37, 5)],
+        answer: 1,
+        explanation: `(7 × 5) + 3 = 35 + 3 = 38. Penyebut tetap 5, sehingga hasilnya ${F(38, 5)}.`
+      },
+      {
+        id: "3b",
+        section: "Bab 4: Pecahan",
+        prompt: `Nyatakan pecahan campuran ${M(9, 5, 6)} ke dalam bentuk pecahan tidak murni.`,
+        options: [F(54, 6), F(61, 6), F(59, 6), F(57, 6)],
+        answer: 2,
+        explanation: `(9 × 6) + 5 = 54 + 5 = 59. Jadi pecahan tidak murninya adalah ${F(59, 6)}.`
+      },
+
+      // 4a, 4b
+      {
+        id: "4a",
+        section: "Bab 4: Pecahan",
+        prompt: `Nyatakan pecahan ${F(36, 48)} dalam bentuk yang paling sederhana.`,
+        options: [F(6, 8), F(3, 4), F(4, 5), F(9, 12)],
+        answer: 1,
+        explanation: `FPB dari 36 dan 48 adalah 12. Bagi pembilang dan penyebut dengan 12: 36÷12 = 3 dan 48÷12 = 4 → ${F(3, 4)}.`
+      },
+      {
+        id: "4b",
+        section: "Bab 4: Pecahan",
+        prompt: `Nyatakan pecahan campuran ${M(4, 18, 24)} dalam bentuk yang paling sederhana.`,
+        options: [M(4, 3, 4), M(4, 4, 3), M(4, 2, 3), M(4, 3, 5)],
+        answer: 0,
+        explanation: `Sederhanakan bagian pecahan ${F(18, 24)} dengan membagi 6 menjadi ${F(3, 4)}. Bilangan bulat 4 tetap, sehingga menjadi ${M(4, 3, 4)}.`
+      },
+
+      // 5, 6, 7
+      {
+        id: "5",
+        section: "Bab 4: Pecahan",
+        prompt: `Urutkan pecahan berikut mulai dari yang <strong>terkecil</strong>: ${F(2, 5)} , ${F(3, 4)} , ${F(1, 2)}`,
+        options: [
+          `${F(2, 5)} , ${F(1, 2)} , ${F(3, 4)}`,
+          `${F(1, 2)} , ${F(2, 5)} , ${F(3, 4)}`,
+          `${F(3, 4)} , ${F(1, 2)} , ${F(2, 5)}`,
+          `${F(2, 5)} , ${F(3, 4)} , ${F(1, 2)}`
+        ],
+        answer: 0,
+        explanation: `Samakan penyebut ke 20: ${F(2, 5)} = ${F(8, 20)}, ${F(1, 2)} = ${F(10, 20)}, ${F(3, 4)} = ${F(15, 20)}. Urutan terkecil ke terbesar: ${F(2, 5)}, ${F(1, 2)}, ${F(3, 4)}.`
+      },
+      {
+        id: "6",
+        section: "Bab 4: Pecahan",
+        prompt: `Urutkan pecahan berikut mulai dari yang <strong>terbesar</strong>: ${F(7, 8)} , ${F(2, 3)} , ${F(5, 6)}`,
+        options: [
+          `${F(5, 6)} , ${F(7, 8)} , ${F(2, 3)}`,
+          `${F(7, 8)} , ${F(2, 3)} , ${F(5, 6)}`,
+          `${F(2, 3)} , ${F(5, 6)} , ${F(7, 8)}`,
+          `${F(7, 8)} , ${F(5, 6)} , ${F(2, 3)}`
+        ],
+        answer: 3,
+        explanation: `Samakan penyebut ke 24: ${F(7, 8)} = ${F(21, 24)}, ${F(5, 6)} = ${F(20, 24)}, ${F(2, 3)} = ${F(16, 24)}. Dari terbesar: ${F(7, 8)}, ${F(5, 6)}, ${F(2, 3)}.`
+      },
+      {
+        id: "7",
+        section: "Bab 4: Pecahan",
+        prompt: `Lengkapi bagian yang kosong pada garis bilangan pecahan berikut dalam bentuk paling sederhana:<br>
+        ${F(1, 10)} , ${F(1, 5)} , <strong>[ ... ]</strong> , ${F(2, 5)} , ${F(1, 2)} , <strong>[ ... ]</strong> , ${F(7, 10)} , ${F(4, 5)}`,
+        options: [
+          `${F(3, 10)} dan ${F(6, 10)}`,
+          `${F(3, 10)} dan ${F(3, 5)}`,
+          `${F(2, 10)} dan ${F(3, 5)}`,
+          `${F(1, 3)} dan ${F(3, 5)}`
+        ],
+        answer: 1,
+        explanation: `Pola bertambah ${F(1, 10)}: setelah ${F(2, 10)} (${F(1, 5)}) adalah ${F(3, 10)}, dan setelah ${F(5, 10)} (${F(1, 2)}) adalah ${F(6, 10)} yang disederhanakan menjadi ${F(3, 5)}.`
+      },
+
+      // 8a, 8b
+      {
+        id: "8a",
+        section: "Bab 4: Pecahan",
+        prompt: `Lengkapi pecahan senilai berikut ini: ${F(3, 4)} = ${F("A", 16)} = ${F(15, "B")}. Nilai A dan B berturut-turut adalah...`,
+        options: ["A = 12 dan B = 20", "A = 9 dan B = 20", "A = 12 dan B = 16", "A = 8 dan B = 24"],
+        answer: 0,
+        explanation: `${F(3, 4)} dikali ${F(4, 4)} = ${F(12, 16)} (A = 12). ${F(3, 4)} dikali ${F(5, 5)} = ${F(15, 20)} (B = 20).`
+      },
+      {
+        id: "8b",
+        section: "Bab 4: Pecahan",
+        prompt: `Lengkapi pecahan senilai berikut ini: ${F(4, 9)} = ${F(12, "P")} = ${F("Q", 45)}. Nilai P dan Q berturut-turut adalah...`,
+        options: ["P = 18 dan Q = 16", "P = 27 dan Q = 20", "P = 27 dan Q = 16", "P = 36 dan Q = 20"],
+        answer: 1,
+        explanation: `${F(4, 9)} dikali ${F(3, 3)} = ${F(12, 27)} (P = 27). ${F(4, 9)} dikali ${F(5, 5)} = ${F(20, 45)} (Q = 20).`
+      },
+
+      // 9a, 9b
+      {
+        id: "9a",
+        section: "Bab 4: Pecahan",
+        prompt: `Carilah nilai dari ${F(4, 7)} dari 42 = ...`,
+        options: ["20", "24", "28", "18"],
+        answer: 1,
+        explanation: `${F(4, 7)} × 42 = 4 × (42 ÷ 7) = 4 × 6 = 24.`
+      },
+      {
+        id: "9b",
+        section: "Bab 4: Pecahan",
+        prompt: `Carilah nilai dari ${F(7, 9)} dari 54 = ...`,
+        options: ["42", "45", "36", "49"],
+        answer: 0,
+        explanation: `${F(7, 9)} × 54 = 7 × (54 ÷ 9) = 7 × 6 = 42.`
+      },
+
+      // 10a, 10b
+      {
+        id: "10a",
+        section: "Bab 5: Penaksiran & Pembulatan",
+        prompt: `Bulatkan pecahan campuran ${M(6, 8, 10)} ke bilangan bulat terdekat.`,
+        options: ["6", "7", "8", "6,5"],
+        answer: 1,
+        explanation: `Karena ${F(8, 10)} lebih besar dari ${F(1, 2)} (${F(5, 10)}), maka dibulatkan ke atas menjadi 6 + 1 = 7.`
+      },
+      {
+        id: "10b",
+        section: "Bab 5: Penaksiran & Pembulatan",
+        prompt: `Bulatkan pecahan campuran ${M(11, 3, 8)} ke bilangan bulat terdekat.`,
+        options: ["12", "10", "11", "11,5"],
+        answer: 2,
+        explanation: `Karena ${F(3, 8)} lebih kecil dari ${F(1, 2)} (${F(4, 8)}), maka dibulatkan ke bawah tetap menjadi 11.`
+      },
+
+      // 11, 12, 13, 14
+      {
+        id: "11",
+        section: "Bab 5: Penaksiran & Pembulatan",
+        prompt: `Taksirlah nilai dari ${M(4, 1, 7)} + ${M(5, 7, 9)} = ...`,
+        options: ["9", "10", "11", "12"],
+        answer: 1,
+        explanation: `${M(4, 1, 7)} dibulatkan menjadi 4, dan ${M(5, 7, 9)} dibulatkan menjadi 6. Maka 4 + 6 = 10.`
+      },
+      {
+        id: "12",
+        section: "Bab 5: Penaksiran & Pembulatan",
+        prompt: `Taksirlah nilai dari ${M(18, 2, 9)} − ${M(7, 5, 8)} = ...`,
+        options: ["11", "10", "12", "9"],
+        answer: 1,
+        explanation: `${M(18, 2, 9)} ≈ 18 dan ${M(7, 5, 8)} ≈ 8. Maka 18 − 8 = 10.`
+      },
+      {
+        id: "13",
+        section: "Bab 5: Penaksiran & Pembulatan",
+        prompt: `Taksirlah nilai dari ${M(4, 6, 7)} × ${M(5, 2, 9)} = ...`,
+        options: ["20", "24", "25", "30"],
+        answer: 2,
+        explanation: `${M(4, 6, 7)} ≈ 5 dan ${M(5, 2, 9)} ≈ 5. Maka 5 × 5 = 25.`
+      },
+      {
+        id: "14",
+        section: "Bab 5: Penaksiran & Pembulatan",
+        prompt: `Taksirlah nilai dari ${M(32, 1, 8)} : ${M(7, 5, 6)} = ...`,
+        options: ["3", "4", "5", "6"],
+        answer: 1,
+        explanation: `${M(32, 1, 8)} ≈ 32 dan ${M(7, 5, 6)} ≈ 8. Maka 32 : 8 = 4.`
+      },
+
+      // 15a, 15b, 15c
+      {
+        id: "15a",
+        section: "Bab 6: Desimal",
+        prompt: `Nyatakan pecahan ${F(13, 20)} dalam bentuk desimal.`,
+        options: ["0,65", "0,13", "0,065", "6,5"],
+        answer: 0,
+        explanation: `Ubah penyebut menjadi 100: ${F(13, 20)} × ${F(5, 5)} = ${F(65, 100)} = 0,65.`
+      },
+      {
+        id: "15b",
+        section: "Bab 6: Desimal",
+        prompt: `Nyatakan pecahan ${F(14, 25)} dalam bentuk desimal.`,
+        options: ["0,14", "0,56", "0,28", "0,42"],
+        answer: 1,
+        explanation: `Ubah penyebut menjadi 100: ${F(14, 25)} × ${F(4, 4)} = ${F(56, 100)} = 0,56.`
+      },
+      {
+        id: "15c",
+        section: "Bab 6: Desimal",
+        prompt: `Nyatakan pecahan campuran ${M(7, 23, 50)} dalam bentuk desimal.`,
+        options: ["7,23", "7,46", "7,50", "7,046"],
+        answer: 1,
+        explanation: `${F(23, 50)} = ${F(46, 100)} = 0,46. Ditambah 7 menjadi 7,46.`
+      },
+
+      // 16a, 16b
+      {
+        id: "16a",
+        section: "Bab 6: Desimal",
+        prompt: `Nyatakan desimal <strong>4,25</strong> ke dalam pecahan campuran yang paling sederhana.`,
+        options: [M(4, 25, 100), M(4, 1, 4), M(4, 3, 4), M(4, 2, 5)],
+        answer: 1,
+        explanation: `4,25 = ${M(4, 25, 100)}. Sederhanakan ${F(25, 100)} dengan membagi 25 menjadi ${F(1, 4)}, sehingga hasilnya ${M(4, 1, 4)}.`
+      },
+      {
+        id: "16b",
+        section: "Bab 6: Desimal",
+        prompt: `Nyatakan desimal <strong>9,6</strong> ke dalam pecahan campuran yang paling sederhana.`,
+        options: [M(9, 6, 10), M(9, 1, 6), M(9, 3, 5), M(9, 2, 5)],
+        answer: 2,
+        explanation: `9,6 = ${M(9, 6, 10)}. Sederhanakan ${F(6, 10)} dengan membagi 2 menjadi ${F(3, 5)} → ${M(9, 3, 5)}.`
+      },
+
+      // 17, 18
+      {
+        id: "17",
+        section: "Bab 6: Desimal",
+        prompt: `Urutkan bilangan desimal <strong>0,64 ; 0,07 ; 0,7 ; 0,59</strong> mulai dari yang <strong>terkecil</strong>.`,
+        options: [
+          "0,07 ; 0,59 ; 0,64 ; 0,7",
+          "0,7 ; 0,07 ; 0,59 ; 0,64",
+          "0,07 ; 0,64 ; 0,59 ; 0,7",
+          "0,07 ; 0,59 ; 0,7 ; 0,64"
+        ],
+        answer: 0,
+        explanation: `Ubah menjadi dua angka di belakang koma: 0,64 ; 0,07 ; 0,70 ; 0,59. Urutan terkecil: 0,07 ; 0,59 ; 0,64 ; 0,7.`
+      },
+      {
+        id: "18",
+        section: "Bab 6: Desimal",
+        prompt: `Urutkan bilangan desimal <strong>3,408 ; 3,48 ; 3,048 ; 3,4</strong> mulai dari yang <strong>terbesar</strong>.`,
+        options: [
+          "3,48 ; 3,408 ; 3,4 ; 3,048",
+          "3,408 ; 3,48 ; 3,048 ; 3,4",
+          "3,48 ; 3,4 ; 3,408 ; 3,048",
+          "3,048 ; 3,4 ; 3,408 ; 3,48"
+        ],
+        answer: 0,
+        explanation: `Samakan 3 tempat desimal: 3,480 > 3,408 > 3,400 > 3,048. Jadi dari terbesar: 3,48 ; 3,408 ; 3,4 ; 3,048.`
+      },
+
+      // 19a, 19b
+      {
+        id: "19a",
+        section: "Bab 6: Desimal",
+        prompt: `Hitunglah nilai dari: <strong>0,008 lebihnya dari 5,74</strong> adalah ...`,
+        options: ["5,82", "5,748", "5,78", "6,54"],
+        answer: 1,
+        explanation: `5,740 + 0,008 = 5,748.`
+      },
+      {
+        id: "19b",
+        section: "Bab 6: Desimal",
+        prompt: `Hitunglah nilai dari: <strong>0,07 kurangnya dari 8,4</strong> adalah ...`,
+        options: ["8,33", "7,7", "8,47", "8,23"],
+        answer: 0,
+        explanation: `8,40 − 0,07 = 8,33.`
+      },
+
+      // 20a, 20b
+      {
+        id: "20a",
+        section: "Bab 6: Desimal",
+        prompt: `Lengkapi pola bilangan desimal berikut:<br><strong>4,684 ; 4,680 ; [ ... ] ; [ ... ] ; 4,668</strong>`,
+        options: [
+          "4,676 dan 4,672",
+          "4,678 dan 4,674",
+          "4,675 dan 4,671",
+          "4,676 dan 4,670"
+        ],
+        answer: 0,
+        explanation: `Setiap langkah berkurang 0,004: 4,680 − 0,004 = 4,676, lalu 4,676 − 0,004 = 4,672.`
+      },
+      {
+        id: "20b",
+        section: "Bab 6: Desimal",
+        prompt: `Lengkapi pola bilangan desimal berikut:<br><strong>2,15 ; [ ... ] ; [ ... ] ; 2,33 ; 2,39</strong>`,
+        options: [
+          "2,21 dan 2,27",
+          "2,16 dan 2,17",
+          "2,20 dan 2,26",
+          "2,22 dan 2,28"
+        ],
+        answer: 0,
+        explanation: `Setiap langkah bertambah 0,06: 2,15 + 0,06 = 2,21, kemudian 2,21 + 0,06 = 2,27.`
+      },
+
+      // 21a, 21b, 21c
+      {
+        id: "21a",
+        section: "Bab 6: Desimal",
+        prompt: `Bulatkan bilangan desimal <strong>6,348</strong> sampai 2 tempat desimal (perseratusan terdekat).`,
+        options: ["6,34", "6,35", "6,30", "6,40"],
+        answer: 1,
+        explanation: `Angka perseribuan adalah 8 (≥ 5), sehingga angka perseratusan 4 dibulatkan naik menjadi 5 → 6,35.`
+      },
+      {
+        id: "21b",
+        section: "Bab 6: Desimal",
+        prompt: `Bulatkan bilangan desimal <strong>42,737</strong> sampai 2 tempat desimal.`,
+        options: ["42,73", "42,70", "42,74", "42,80"],
+        answer: 2,
+        explanation: `Angka perseribuan adalah 7 (≥ 5), sehingga 42,737 dibulatkan menjadi 42,74.`
+      },
+      {
+        id: "21c",
+        section: "Bab 6: Desimal",
+        prompt: `Bulatkan bilangan desimal <strong>7,862</strong> sampai 2 tempat desimal.`,
+        options: ["7,87", "7,86", "7,80", "7,90"],
+        answer: 1,
+        explanation: `Angka perseribuan adalah 2 (< 5), sehingga dibulatkan ke bawah menjadi 7,86.`
+      },
+
+      // 22a, 22b
+      {
+        id: "22a",
+        section: "Bab 6: Desimal",
+        prompt: `Bulatkan bilangan desimal <strong>84,7 cm</strong> ke satuan pengukuran terdekat.`,
+        options: ["84 cm", "85 cm", "80 cm", "84,5 cm"],
+        answer: 1,
+        explanation: `Angka persepuluhan adalah 7 (≥ 5), maka 84,7 cm dibulatkan menjadi 85 cm.`
+      },
+      {
+        id: "22b",
+        section: "Bab 6: Desimal",
+        prompt: `Bulatkan bilangan desimal <strong>73,3 kg</strong> ke satuan pengukuran terdekat.`,
+        options: ["74 kg", "70 kg", "73 kg", "73,5 kg"],
+        answer: 2,
+        explanation: `Angka persepuluhan adalah 3 (< 5), maka 73,3 kg dibulatkan ke bawah menjadi 73 kg.`
+      },
+
+      // 23, 24, 25, 26
+      {
+        id: "23",
+        section: "Bab 6: Desimal",
+        prompt: `Taksirlah nilai dari <strong>21,8 + 33,25</strong> ke satuan terdekat.`,
+        options: ["54", "55", "56", "57"],
+        answer: 1,
+        explanation: `21,8 ≈ 22 dan 33,25 ≈ 33. Maka 22 + 33 = 55.`
+      },
+      {
+        id: "24",
+        section: "Bab 6: Desimal",
+        prompt: `Taksirlah nilai dari <strong>54,76 − 22,38</strong> ke satuan terdekat.`,
+        options: ["32", "33", "31", "34"],
+        answer: 1,
+        explanation: `54,76 ≈ 55 dan 22,38 ≈ 22. Maka 55 − 22 = 33.`
+      },
+      {
+        id: "25",
+        section: "Bab 6: Desimal",
+        prompt: `Taksirlah nilai dari <strong>7,24 × 8,9</strong> ke satuan terdekat.`,
+        options: ["56", "63", "64", "72"],
+        answer: 1,
+        explanation: `7,24 ≈ 7 dan 8,9 ≈ 9. Maka 7 × 9 = 63.`
+      },
+      {
+        id: "26",
+        section: "Bab 6: Desimal",
+        prompt: `Taksirlah nilai dari <strong>47,9 : 8</strong> ke satuan terdekat.`,
+        options: ["5", "6", "7", "8"],
+        answer: 1,
+        explanation: `47,9 dibulatkan menjadi 48. Maka 48 : 8 = 6.`
+      },
+
+      // 27, 28, 29, 30, 31, 32 (Word Problems)
+      {
+        id: "27",
+        section: "Soal Cerita (Bab 4–6)",
+        prompt: `Dina mempunyai pita sepanjang <strong>300 cm</strong>. Ia menggunakan <strong>79 cm</strong> untuk menghias kado. Berapa bagian pita yang masih tersisa?`,
+        options: [F(79, 300), F(221, 300), F(231, 300), F(211, 300)],
+        answer: 1,
+        explanation: `Sisa pita = 300 − 79 = 221 cm. Bagian pita tersisa adalah ${F(221, 300)}.`
+      },
+      {
+        id: "28",
+        section: "Soal Cerita (Bab 4–6)",
+        prompt: `Bima membeli beberapa buah. ${F(1, 5)} dari seluruh buah yang dibelinya adalah mangga. Sisanya adalah jeruk. Jika Bima membeli <strong>32 buah jeruk</strong>, berapa jumlah seluruh buah yang dibeli Bima?`,
+        options: ["36 buah", "40 buah", "45 buah", "35 buah"],
+        answer: 1,
+        explanation: `Bagian jeruk = 1 − ${F(1, 5)} = ${F(4, 5)} (4 unit = 32 buah → 1 unit = 8 buah). Total seluruh buah = 5 × 8 = 40 buah.`
+      },
+      {
+        id: "29",
+        section: "Soal Cerita (Bab 4–6)",
+        prompt: `Paman mempunyai kayu sepanjang ${M(9, 1, 2)} m dan membeli lagi <strong>3,75 m</strong>. Untuk membuat rak diperlukan <strong>8 m</strong>. Berapa meter kayu yang dimiliki Paman sekarang?`,
+        options: ["5,25 m", "4,75 m", "5,75 m", "4,25 m"],
+        answer: 0,
+        explanation: `9,5 + 3,75 = 13,25 m. Setelah dipakai 8 m: 13,25 − 8 = 5,25 m.`
+      },
+      {
+        id: "30",
+        section: "Soal Cerita (Bab 4–6)",
+        prompt: `Rani mengisi ember dengan ${M(34, 1, 2)} liter air. Ia menggunakan <strong>15,7 liter</strong> air untuk menyiram tanaman. Kemudian, Rani mengisi lagi ember dengan <strong>8,4 liter</strong> air. Berapa liter air yang ada di ember sekarang?`,
+        options: ["27,2 liter", "26,2 liter", "28,2 liter", "27,6 liter"],
+        answer: 0,
+        explanation: `34,5 − 15,7 = 18,8 liter. Ditambah 8,4 liter: 18,8 + 8,4 = 27,2 liter.`
+      },
+      {
+        id: "31",
+        section: "Soal Cerita (Bab 4–6)",
+        prompt: `Klara membaca ${F(1, 5)} buku cerita pada hari Senin dan ${F(3, 8)} pada hari Selasa. Buku cerita tersebut terdiri dari <strong>160 halaman</strong>. Berapa halaman yang dibaca Klara dalam dua hari tersebut?`,
+        options: ["88 halaman", "92 halaman", "84 halaman", "96 halaman"],
+        answer: 1,
+        explanation: `Hari Senin: ${F(1, 5)} × 160 = 32 halaman. Hari Selasa: ${F(3, 8)} × 160 = 60 halaman. Total = 32 + 60 = 92 halaman.`
+      },
+      {
+        id: "32",
+        section: "Soal Cerita (Bab 4–6)",
+        prompt: `Kue A dan kue B mempunyai ukuran yang sama. Ibu memotong ${F(4, 7)} kue A untuk Sinta, dan memotong ${F(3, 5)} dari kue B untuk Raka. Siapa yang mendapatkan porsi <strong>lebih kecil</strong>?`,
+        options: [
+          `Sinta (karena ${F(4, 7)} < ${F(3, 5)})`,
+          `Raka (karena ${F(3, 5)} < ${F(4, 7)})`,
+          "Keduanya sama besar",
+          `Sinta (karena ${F(4, 7)} > ${F(3, 5)})`
+        ],
+        answer: 0,
+        explanation: `Samakan penyebut ke 35: Sinta = ${F(20, 35)}, Raka = ${F(21, 35)}. Karena ${F(20, 35)} < ${F(21, 35)}, Sinta mendapat porsi lebih kecil.`
+      },
+
+      // 33a, 33b, 34
+      {
+        id: "33a",
+        section: "Bab 6: Nilai Tempat Desimal",
+        prompt: `Pada bilangan <strong>6,385</strong>, angka <strong>5</strong> berada pada nilai tempat ...`,
+        options: ["Persepuluhan", "Perseratusan", "Perseribuan", "Satuan"],
+        answer: 2,
+        explanation: `Angka pertama di belakang koma adalah persepuluhan (3), kedua perseratusan (8), dan ketiga perseribuan (5).`
+      },
+      {
+        id: "33b",
+        section: "Bab 6: Nilai Tempat Desimal",
+        prompt: `Pada bilangan <strong>9,263</strong>, nilai dari angka <strong>6</strong> adalah ...`,
+        options: ["0,6", "0,06", "0,006", "60"],
+        answer: 1,
+        explanation: `Angka 6 menempati posisi perseratusan, sehingga nilainya adalah 0,06.`
+      },
+      {
+        id: "34",
+        section: "Bab 6: Nilai Tempat Desimal",
+        prompt: `Berapakah nilai bilangan di dalam kotak?<br><strong>8,492 = 8 + 0,4 + [ &nbsp;?&nbsp; ] + 0,002</strong>`,
+        options: ["0,9", "0,09", "0,009", "9"],
+        answer: 1,
+        explanation: `Angka 9 berada di tempat perseratusan, sehingga nilainya 0,09.`
+      },
+
+      // 35a, 35b, 35c, 35d
+      {
+        id: "35a",
+        section: "Bab 6: Membandingkan Desimal",
+        prompt: `Isilah titik-titik berikut: <strong>6,4 ...... 0,640</strong>`,
+        options: ["lebih besar daripada", "lebih kecil daripada", "sama dengan", "tidak dapat dibandingkan"],
+        answer: 0,
+        explanation: `6,4 memiliki nilai satuan 6 sedangkan 0,640 memiliki satuan 0, maka 6,4 lebih besar daripada 0,640.`
+      },
+      {
+        id: "35b",
+        section: "Bab 6: Membandingkan Desimal",
+        prompt: `Isilah titik-titik berikut: <strong>0,372 ...... 0,37</strong>`,
+        options: ["lebih besar daripada", "lebih kecil daripada", "sama dengan", "kurang dari"],
+        answer: 0,
+        explanation: `0,37 = 0,370. Karena 0,372 > 0,370, maka 0,372 lebih besar daripada 0,37.`
+      },
+      {
+        id: "35c",
+        section: "Bab 6: Membandingkan Desimal",
+        prompt: `Isilah titik-titik berikut: <strong>0,519 ...... 5,19</strong>`,
+        options: ["lebih besar daripada", "lebih kecil daripada", "sama dengan", "lebih dari"],
+        answer: 1,
+        explanation: `0,519 < 5,19, sehingga jawabannya adalah lebih kecil daripada.`
+      },
+      {
+        id: "35d",
+        section: "Bab 6: Membandingkan Desimal",
+        prompt: `Isilah titik-titik berikut: <strong>4,9 ...... 4,90</strong>`,
+        options: ["lebih besar daripada", "lebih kecil daripada", "sama dengan", "berbeda dengan"],
+        answer: 2,
+        explanation: `Menambahkan nol di akhir desimal tidak mengubah nilainya, jadi 4,9 sama dengan 4,90.`
+      },
+
+      // 36a, 36b, 37, 38, 39, 40a, 40b
+      {
+        id: "36a",
+        section: "Bab 6: Desimal & Pembulatan",
+        prompt: `Tuliskan desimal <strong>0,6</strong> menjadi pecahan dalam bentuk yang paling sederhana.`,
+        options: [F(6, 10), F(3, 5), F(2, 5), F(1, 6)],
+        answer: 1,
+        explanation: `0,6 = ${F(6, 10)}. Sederhanakan dengan membagi 2 menjadi ${F(3, 5)}.`
+      },
+      {
+        id: "36b",
+        section: "Bab 6: Desimal & Pembulatan",
+        prompt: `Tuliskan desimal <strong>6,45</strong> menjadi pecahan campuran dalam bentuk yang paling sederhana.`,
+        options: [M(6, 45, 100), M(6, 9, 20), M(6, 4, 5), M(6, 9, 10)],
+        answer: 1,
+        explanation: `6,45 = ${M(6, 45, 100)}. Bagi pembilang dan penyebut pecahan dengan 5 → ${M(6, 9, 20)}.`
+      },
+      {
+        id: "37",
+        section: "Bab 6: Desimal & Pembulatan",
+        prompt: `<strong>31,748</strong> adalah <strong>.........</strong> jika dibulatkan ke perseratusan terdekat.`,
+        options: ["31,74", "31,75", "31,80", "31,70"],
+        answer: 1,
+        explanation: `Angka perseribuan adalah 8 (≥ 5), sehingga perseratusan 4 naik menjadi 5 → 31,75.`
+      },
+      {
+        id: "38",
+        section: "Bab 5–6: Penaksiran Campuran",
+        prompt: `Taksirlah ${M(23, 6, 7)} : <strong>7,8</strong> (bulatkan kedua bilangan di samping ke bilangan bulat terdekat)!`,
+        options: ["2", "3", "4", "6"],
+        answer: 1,
+        explanation: `${M(23, 6, 7)} dibulatkan menjadi 24, dan 7,8 dibulatkan menjadi 8. Maka 24 : 8 = 3.`
+      },
+      {
+        id: "39",
+        section: "Bab 6: Nilai Tempat Desimal",
+        prompt: `Pada bilangan <strong>7,084</strong>, angka <strong>8</strong> berada pada nilai tempat ...`,
+        options: ["Persepuluhan", "Perseratusan", "Perseribuan", "Puluhan"],
+        answer: 1,
+        explanation: `Urutan di belakang koma pada 7,084: 0 (persepuluhan), 8 (perseratusan), 4 (perseribuan).`
+      },
+      {
+        id: "40a",
+        section: "Bab 6: Pecahan ke Desimal",
+        prompt: `Tuliskan ${M(5, 7, 1000)} dalam bentuk desimal.`,
+        options: ["5,7", "5,07", "5,007", "5,700"],
+        answer: 2,
+        explanation: `Perseribuan berarti 3 angka di belakang koma: ${F(7, 1000)} = 0,007. Jadi ${M(5, 7, 1000)} = 5,007.`
+      },
+      {
+        id: "40b",
+        section: "Bab 6: Pecahan ke Desimal",
+        prompt: `Tuliskan ${M(8, 462, 1000)} dalam bentuk desimal.`,
+        options: ["8,462", "8,0462", "84,62", "8,46"],
+        answer: 0,
+        explanation: `${F(462, 1000)} = 0,462. Ditambah 8 menjadi 8,462.`
+      }
+    ];
+
+    let userAnswers = new Array(questions.length).fill(null);
+    let isSubmitted = false;
+    let showingWrongOnly = false;
+    const optionLetters = ['A', 'B', 'C', 'D'];
+
+    // Timer 90 minutes (5400 seconds) with Auto Submit
+    const QUIZ_DURATION_SECONDS = 90 * 60;
+    let remainingSeconds = QUIZ_DURATION_SECONDS;
+    let timerInterval = null;
+
+    function formatTime(totalSec) {
+      const mins = Math.floor(totalSec / 60);
+      const secs = totalSec % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateTimerUI() {
+      const display = document.getElementById('timer-display');
+      const box = document.getElementById('timer-box');
+      display.textContent = formatTime(remainingSeconds);
+
+      if (remainingSeconds <= 300) {
+        box.className = 'bg-rose-50 border border-rose-300 px-3 py-1.5 rounded-xl font-semibold text-rose-700 flex items-center gap-1.5 animate-pulse';
+        display.className = 'font-mono font-extrabold text-rose-800';
+      } else {
+        box.className = 'bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-xl font-semibold text-amber-800 flex items-center gap-1.5';
+        display.className = 'font-mono font-extrabold text-amber-900';
+      }
+    }
+
+    function startTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      remainingSeconds = QUIZ_DURATION_SECONDS;
+      updateTimerUI();
+
+      timerInterval = setInterval(() => {
+        if (isSubmitted) {
+          clearInterval(timerInterval);
+          return;
+        }
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          remainingSeconds = 0;
+          updateTimerUI();
+          clearInterval(timerInterval);
+          submitQuiz(true);
+        } else {
+          updateTimerUI();
+        }
+      }, 1000);
+    }
+
+    function renderQuiz() {
+      const container = document.getElementById('quiz-container');
+      document.getElementById('total-count').textContent = questions.length;
+      container.innerHTML = '';
+
+      questions.forEach((q, qIdx) => {
+        const card = document.createElement('div');
+        card.id = `q-card-${qIdx}`;
+        card.className = 'bg-white rounded-2xl shadow-sm border border-slate-200 p-5 transition-all';
+
+        const optionsHtml = q.options.map((optText, oIdx) => {
+          return `
+            <button
+              type="button"
+              id="opt-${qIdx}-${oIdx}"
+              onclick="selectOption(${qIdx}, ${oIdx})"
+              class="option-card w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50/60 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800 font-medium"
+            >
+              <span id="badge-${qIdx}-${oIdx}" class="flex-shrink-0 w-8 h-8 rounded-lg bg-white border border-slate-300 flex items-center justify-center font-bold text-sm text-slate-700">
+                ${optionLetters[oIdx]}
+              </span>
+              <span class="text-base leading-relaxed">${optText}</span>
+            </button>
+          `;
+        }).join('');
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="inline-flex items-center px-3 py-1 rounded-lg bg-indigo-600 text-white font-bold text-sm">
+              Soal ${q.id}
+            </span>
+            <span class="text-xs font-semibold text-slate-400">${q.section}</span>
+          </div>
+          <div class="text-slate-900 font-medium text-base leading-relaxed mb-4">
+            ${q.prompt}
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            ${optionsHtml}
+          </div>
+          <div id="exp-${qIdx}" class="hidden mt-4 p-3.5 rounded-xl text-sm leading-relaxed border"></div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function selectOption(qIdx, oIdx) {
+      if (isSubmitted) return;
+
+      const instantMode = document.getElementById('instant-mode').checked;
+      if (instantMode && userAnswers[qIdx] !== null) return;
+
+      userAnswers[qIdx] = oIdx;
+      updateProgress();
+
+      const q = questions[qIdx];
+      for (let i = 0; i < q.options.length; i++) {
+        const btn = document.getElementById(`opt-${qIdx}-${i}`);
+        const badge = document.getElementById(`badge-${qIdx}-${i}`);
+        btn.className = 'option-card w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 border-slate-200 bg-slate-50/60 hover:border-indigo-400 hover:bg-indigo-50/40 text-slate-800 font-medium';
+        badge.className = 'flex-shrink-0 w-8 h-8 rounded-lg bg-white border border-slate-300 flex items-center justify-center font-bold text-sm text-slate-700';
+
+        if (i === oIdx) {
+          btn.className = 'option-card w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-indigo-950 font-semibold';
+          badge.className = 'flex-shrink-0 w-8 h-8 rounded-lg bg-indigo-600 border border-indigo-600 flex items-center justify-center font-bold text-sm text-white';
+        }
+      }
+
+      if (instantMode) {
+        revealQuestionFeedback(qIdx);
+      }
+    }
+
+    function revealQuestionFeedback(qIdx) {
+      const q = questions[qIdx];
+      const chosen = userAnswers[qIdx];
+      const isCorrect = chosen === q.answer;
+      const card = document.getElementById(`q-card-${qIdx}`);
+      const expBox = document.getElementById(`exp-${qIdx}`);
+
+      for (let i = 0; i < q.options.length; i++) {
+        const btn = document.getElementById(`opt-${qIdx}-${i}`);
+        const badge = document.getElementById(`badge-${qIdx}-${i}`);
+        btn.classList.add('disabled-opt', 'cursor-default');
+        btn.classList.remove('hover:border-indigo-400', 'hover:bg-indigo-50/40');
+
+        if (i === q.answer) {
+          btn.className = 'option-card disabled-opt cursor-default w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-emerald-950 font-semibold';
+          badge.className = 'flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-600 border border-emerald-600 flex items-center justify-center font-bold text-sm text-white';
+        } else if (i === chosen && !isCorrect) {
+          btn.className = 'option-card disabled-opt cursor-default w-full text-left flex items-center gap-3 p-3.5 rounded-xl border-2 border-rose-500 bg-rose-50 text-rose-950 font-semibold';
+          badge.className = 'flex-shrink-0 w-8 h-8 rounded-lg bg-rose-600 border border-rose-600 flex items-center justify-center font-bold text-sm text-white';
+        } else {
+          btn.className = 'option-card disabled-opt cursor-default w-full text-left flex items-center gap-3 p-3.5 rounded-xl border border-slate-200 bg-slate-50/40 text-slate-400 font-normal';
+          badge.className = 'flex-shrink-0 w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-sm text-slate-400';
+        }
+      }
+
+      card.classList.remove('border-slate-200');
+      card.classList.add(isCorrect ? 'border-emerald-300' : 'border-rose-300');
+
+      expBox.classList.remove('hidden');
+      if (isCorrect) {
+        expBox.className = 'mt-4 p-3.5 rounded-xl text-sm leading-relaxed border border-emerald-200 bg-emerald-50/80 text-emerald-900';
+        expBox.innerHTML = `<strong class="text-emerald-700">✓ Benar!</strong> ${q.explanation}`;
+      } else {
+        const statusText = chosen === null ? 'Tidak dijawab.' : `Jawaban kamu (${optionLetters[chosen]}) kurang tepat.`;
+        expBox.className = 'mt-4 p-3.5 rounded-xl text-sm leading-relaxed border border-rose-200 bg-rose-50/80 text-rose-900';
+        expBox.innerHTML = `<strong class="text-rose-700">✗ ${statusText}</strong> Kunci jawaban: <strong>${optionLetters[q.answer]}</strong>.<br><span class="text-slate-700">${q.explanation}</span>`;
+      }
+    }
+
+    function updateProgress() {
+      const answered = userAnswers.filter(a => a !== null).length;
+      const total = questions.length;
+      document.getElementById('answered-count').textContent = answered;
+      const pct = Math.round((answered / total) * 100);
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+
+      const warning = document.getElementById('unanswered-warning');
+      if (answered < total && !warning.classList.contains('hidden')) {
+        warning.textContent = `Masih ada ${total - answered} soal yang belum dijawab.`;
+      }
+    }
+
+    function submitQuiz(isAuto = false) {
+      if (isSubmitted) return;
+
+      const answered = userAnswers.filter(a => a !== null).length;
+      const total = questions.length;
+      const warning = document.getElementById('unanswered-warning');
+
+      if (!isAuto && answered < total) {
+        if (warning.classList.contains('hidden')) {
+          warning.textContent = `Perhatian: Masih ada ${total - answered} soal yang belum dijawab. Klik "Selesai & Hitung Nilai" sekali lagi jika tetap ingin mengumpulkan.`;
+          warning.classList.remove('hidden');
+          return;
+        }
+      }
+
+      if (timerInterval) clearInterval(timerInterval);
+      warning.classList.add('hidden');
+      isSubmitted = true;
+
+      let correctCount = 0;
+      questions.forEach((q, idx) => {
+        if (userAnswers[idx] === q.answer) correctCount++;
+        revealQuestionFeedback(idx);
+      });
+
+      const percent = Math.round((correctCount / total) * 100);
+      const rawName = document.getElementById('student-name').value.trim();
+      document.getElementById('result-student-name').textContent = rawName ? rawName : 'Siswa Kelas 4';
+      document.getElementById('score-correct').textContent = correctCount;
+      document.getElementById('score-percent').textContent = percent;
+
+      const autoBadge = document.getElementById('auto-submit-badge');
+      if (isAuto) {
+        autoBadge.classList.remove('hidden');
+      } else {
+        autoBadge.classList.add('hidden');
+      }
+
+      let msg = '';
+      if (percent >= 90) msg = 'Luar biasa! Pemahaman pecahan dan desimal kamu sangat matang.';
+      else if (percent >= 75) msg = 'Bagus sekali! Sedikit lagi menuju sempurna, periksa kembali soal yang salah.';
+      else if (percent >= 60) msg = 'Cukup baik! Pelajari pembahasan di bawah untuk meningkatkan nilaimu.';
+      else msg = 'Tetap semangat! Baca setiap pembahasan dengan teliti lalu klik Coba Lagi.';
+      document.getElementById('result-message').textContent = msg;
+
+      const banner = document.getElementById('score-banner');
+      banner.classList.remove('hidden');
+      document.getElementById('submit-btn').disabled = true;
+      document.getElementById('submit-btn').classList.add('opacity-50', 'cursor-not-allowed');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function filterWrongOnly() {
+      showingWrongOnly = !showingWrongOnly;
+      const btn = document.getElementById('filter-btn');
+      btn.textContent = showingWrongOnly ? 'Tampilkan Semua Soal (62)' : 'Tampilkan Soal yang Salah Saja';
+
+      questions.forEach((q, idx) => {
+        const card = document.getElementById(`q-card-${idx}`);
+        const isCorrect = userAnswers[idx] === q.answer;
+        if (showingWrongOnly && isCorrect) {
+          card.classList.add('hidden');
+        } else {
+          card.classList.remove('hidden');
+        }
+      });
+    }
+
+    function resetQuiz() {
+      userAnswers = new Array(questions.length).fill(null);
+      isSubmitted = false;
+      showingWrongOnly = false;
+      document.getElementById('score-banner').classList.add('hidden');
+      document.getElementById('auto-submit-badge').classList.add('hidden');
+      document.getElementById('unanswered-warning').classList.add('hidden');
+      document.getElementById('filter-btn').textContent = 'Tampilkan Soal yang Salah Saja';
+
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+      renderQuiz();
+      updateProgress();
+      startTimer();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Initialize quiz and 90-minute countdown timer on load
+    renderQuiz();
+    startTimer();
+  </script>
+</body>
+</html>
